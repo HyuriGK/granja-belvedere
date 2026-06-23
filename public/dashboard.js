@@ -66,9 +66,6 @@ document.addEventListener("DOMContentLoaded",async()=>{
   document.getElementById("drawerForm").onsubmit=submitDrawer;
   document.getElementById("menuButton").onclick=()=>document.getElementById("sidebar").classList.toggle("open");
   document.getElementById("quickAdd").onclick=()=>openDrawer("sale");
-  document.getElementById("backupButton").onclick=exportBackup;
-  document.getElementById("importButton").onclick=()=>document.getElementById("importFile").click();
-  document.getElementById("importFile").onchange=importBackup;
   document.getElementById("globalSearch").addEventListener("input",e=>{if(e.target.value){navigate("clientes");document.getElementById("clientSearch").value=e.target.value;renderClients()}});
   document.addEventListener("keydown",e=>{if(e.key==="Escape")closeDrawer();if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="k"){e.preventDefault();document.getElementById("globalSearch").focus()}});
   setInterval(()=>document.getElementById("clock").textContent=new Date().toLocaleString("pt-BR",{dateStyle:"short",timeStyle:"short"}),1000);
@@ -201,5 +198,3 @@ function togglePayment(id){const t=db.transacoes.find(x=>x.id==id);t.pago=!t.pag
 function toggleTask(id){const t=db.tarefas.find(x=>x.id==id);t.concluida=!t.concluida;save("Tarefa atualizada")}
 function removeItem(collection,id){if(confirm("Deseja realmente excluir este registro?")){db[collection]=db[collection].filter(x=>x.id!=id);save("Registro excluído")}}
 function toast(message){const el=document.createElement("div");el.className="toast";el.innerHTML=`<i class="fa-solid fa-circle-check"></i>${escapeHtml(message)}`;document.getElementById("toastRegion").appendChild(el);setTimeout(()=>el.remove(),3000)}
-function exportBackup(){const blob=new Blob([JSON.stringify(db,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`belvedere-backup-${isoToday()}.json`;a.click();URL.revokeObjectURL(a.href);toast("Backup gerado")}
-function importBackup(e){const file=e.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=()=>{try{db=normalizeDb(JSON.parse(reader.result));save("Dados restaurados com sucesso")}catch{alert("O arquivo selecionado não é um backup válido.")}};reader.readAsText(file);e.target.value=""}
