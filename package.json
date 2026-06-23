@@ -1,0 +1,20 @@
+{
+  "name": "granja-belvedere",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node api/index.js",
+    "dev": "node api/index.js",
+    "build": "echo Build concluido",
+    "db:init": "node scripts/init-db.js",
+    "db:import": "node scripts/import-backup.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.6.1",
+    "express": "^4.21.2",
+    "pg": "^8.16.3"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

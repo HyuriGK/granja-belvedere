@@ -1,0 +1,7 @@
+node_modules/
+.env
+.env.*
+!.env.example
+.vercel/
+belvedere_backup.json
+backups/
