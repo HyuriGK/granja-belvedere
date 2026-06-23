@@ -73,7 +73,6 @@ document.addEventListener("DOMContentLoaded",async()=>{
   document.addEventListener("keydown",e=>{if(e.key==="Escape")closeDrawer();if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="k"){e.preventDefault();document.getElementById("globalSearch").focus()}});
   setInterval(()=>document.getElementById("clock").textContent=new Date().toLocaleString("pt-BR",{dateStyle:"short",timeStyle:"short"}),1000);
   await loadData();
-  if(seedHelpfulData())await save();
   renderAll();
 });
 
@@ -97,19 +96,6 @@ async function loadData(){
   }
 }
 
-function seedHelpfulData(){
-  let changed=false;
-  if(!db.oportunidades.length&&db.clientes.length){
-    db.oportunidades=db.clientes.slice(0,3).map((c,i)=>({id:Date.now()+i,clienteId:c.id,titulo:i?"Pedido recorrente":"Primeiro pedido",valor:[120,180,90][i]||100,etapa:["lead","contato","proposta"][i]||"lead",previsao:isoToday(),observacoes:""}));
-    changed=true;
-  }
-  if(!db.tarefas.length&&db.clientes.length){
-    const tomorrow=new Date();tomorrow.setDate(tomorrow.getDate()+1);
-    db.tarefas=[{id:Date.now()+10,titulo:"Confirmar próximo pedido",clienteId:db.clientes[0].id,data:isoToday(),hora:"09:00",tipo:"Ligação",concluida:false},{id:Date.now()+11,titulo:"Enviar tabela de preços",clienteId:db.clientes[1]?.id||db.clientes[0].id,data:tomorrow.toISOString().slice(0,10),hora:"14:30",tipo:"WhatsApp",concluida:false}];
-    changed=true;
-  }
-  return changed;
-}
 function navigate(view){
   document.querySelectorAll(".view").forEach(v=>v.classList.toggle("active",v.id==="view-"+view));
   document.querySelectorAll(".nav-link[data-view]").forEach(b=>b.classList.toggle("active",b.dataset.view===view));
