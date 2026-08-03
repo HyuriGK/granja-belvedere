@@ -13,7 +13,7 @@ const stageConfig = [
   {id:"negociacao",label:"Negociação",color:"#d27652"},
   {id:"ganho",label:"Clientes ganhos",color:"#35a477"}
 ];
-const titles = {dashboard:["CENTRAL DE OPERAÇÕES","Visão geral"],vendas:["COMERCIAL","Vendas"],crm:["RELACIONAMENTO","Funil CRM"],clientes:["RELACIONAMENTO","Clientes"],agenda:["PRODUTIVIDADE","Agenda comercial"],financeiro:["GESTÃO","Financeiro"],plantel:["PRODUÇÃO","Plantel"]};
+const titles = {dashboard:["CENTRAL DE OPERAÇÕES","Visão geral"],vendas:["COMERCIAL","Vendas"],despesas:["FINANCEIRO","Despesas"],crm:["RELACIONAMENTO","Funil CRM"],clientes:["RELACIONAMENTO","Clientes"],agenda:["PRODUTIVIDADE","Agenda comercial"],financeiro:["GESTÃO","Financeiro"],plantel:["PRODUÇÃO","Plantel"]};
 
 function normalizeDb(data){
   const result={...emptyDb,...data};
@@ -60,6 +60,7 @@ document.addEventListener("DOMContentLoaded",async()=>{
   document.addEventListener("click",e=>{const action=e.target.closest("[data-action]")?.dataset.action;if(action)openDrawer(action)});
   document.querySelectorAll(".period-filter button").forEach(b=>b.onclick=()=>{dashboardPeriod=+b.dataset.period;document.querySelectorAll(".period-filter button").forEach(x=>x.classList.toggle("active",x===b));renderDashboard()});
   ["salesSearch","salesStatusFilter","salesTypeFilter"].forEach(id=>document.getElementById(id).addEventListener("input",renderSales));
+  ["expensesSearch","expensesStatusFilter","expensesTypeFilter"].forEach(id=>document.getElementById(id).addEventListener("input",renderExpenses));
   ["clientSearch","clientSegmentFilter"].forEach(id=>document.getElementById(id).addEventListener("input",renderClients));
   document.getElementById("taskStatusFilter").onchange=renderAgenda;
   document.getElementById("closeDrawer").onclick=closeDrawer;document.getElementById("cancelDrawer").onclick=closeDrawer;document.getElementById("drawerBackdrop").onclick=closeDrawer;
@@ -98,14 +99,14 @@ function navigate(view){
   document.querySelectorAll(".nav-link[data-view]").forEach(b=>b.classList.toggle("active",b.dataset.view===view));
   document.getElementById("pageEyebrow").textContent=titles[view][0];document.getElementById("pageTitle").textContent=titles[view][1];
   document.getElementById("sidebar").classList.remove("open");
-  ({dashboard:renderDashboard,vendas:renderSales,crm:renderPipeline,clientes:renderClients,agenda:renderAgenda,financeiro:renderFinance,plantel:renderFlock}[view])();
+  ({dashboard:renderDashboard,vendas:renderSales,despesas:renderExpenses,crm:renderPipeline,clientes:renderClients,agenda:renderAgenda,financeiro:renderFinance,plantel:renderFlock}[view])();
 }
 function renderAll(){
   const openTasks=db.tarefas.filter(t=>!t.concluida).length;
   document.getElementById("navTasks").textContent=openTasks;document.getElementById("navTasks").style.display=openTasks?"":"none";
   document.getElementById("notificationDot").style.display=openTasks?"":"none";
   document.getElementById("navOpportunities").textContent=db.oportunidades.filter(o=>o.etapa!=="ganho").length;
-  renderDashboard();renderSales();renderPipeline();renderClients();renderAgenda();renderFinance();renderFlock();
+  renderDashboard();renderSales();renderExpenses();renderPipeline();renderClients();renderAgenda();renderFinance();renderFlock();
 }
 function kpi(icon,label,value,sub,tone=""){return `<div class="kpi ${tone}"><div class="kpi-icon"><i class="${icon}"></i></div><div><span>${label}</span><strong>${value}</strong><small>${sub}</small></div></div>`}
 function renderDashboard(){
@@ -131,7 +132,14 @@ function renderSales(){
   const list=sales().filter(t=>(!q||clientName(t.clienteId).toLowerCase().includes(q)||(t.produto||t.desc||"").toLowerCase().includes(q))&&(!status||(status==="pago")===!!t.pago)&&(!type||(type==="cortesia"&&t.cortesia)||(type==="venda"&&!t.cortesia))).sort((a,b)=>b.data.localeCompare(a.data));
   const total=list.filter(t=>!t.cortesia).reduce((a,t)=>a+Number(t.valor),0),pending=list.filter(t=>!t.pago&&!t.cortesia).reduce((a,t)=>a+Number(t.valor),0);
   document.getElementById("salesMiniStats").innerHTML=`<div class="mini-stat"><span>Total filtrado</span><strong>${money(total)}</strong></div><div class="mini-stat"><span>Pedidos</span><strong>${list.length}</strong></div><div class="mini-stat"><span>Pendente</span><strong>${money(pending)}</strong></div>`;
-  document.getElementById("salesTable").innerHTML=list.length?list.map(t=>`<tr><td>${shortDate(t.data)}</td><td><div class="client-cell"><div class="table-avatar">${initials(clientName(t.clienteId))}</div><strong>${escapeHtml(clientName(t.clienteId))}</strong></div></td><td>${escapeHtml(t.produto||t.desc||"Ovos caipiras")}</td><td>${t.qtd||"—"}</td><td>${escapeHtml(t.responsavel||"—")}</td><td><button class="status ${t.pago?"paid":"pending"} table-action" onclick="togglePayment(${t.id})">${t.pago?"Pago":"Pendente"}</button></td><td><strong>${t.cortesia?"Cortesia":money(t.valor)}</strong></td><td><button class="table-action" onclick="removeItem('transacoes',${t.id})"><i class="fa-regular fa-trash-can"></i></button></td></tr>`).join(""):`<tr><td colspan="8">${empty("fa-receipt","Nenhuma venda encontrada")}</td></tr>`;
+  document.getElementById("salesTable").innerHTML=list.length?list.map(t=>`<tr><td>${shortDate(t.data)}</td><td><div class="client-cell"><div class="table-avatar">${initials(clientName(t.clienteId))}</div><strong>${escapeHtml(clientName(t.clienteId))}</strong></div></td><td>${escapeHtml(t.produto||t.desc||"Ovos caipiras")}</td><td>${t.qtd||"—"}</td><td>${escapeHtml(t.responsavel||"—")}</td><td><button class="status ${t.pago?"paid":"pending"} table-action" onclick="togglePayment(${t.id})">${t.pago?"Pago":"Pendente"}</button></td><td><strong>${t.cortesia?"Cortesia":money(t.valor)}</strong></td><td><div class="table-actions"><button class="table-action" onclick="editSale(${t.id})" aria-label="Editar venda"><i class="fa-regular fa-pen-to-square"></i></button><button class="table-action" onclick="removeItem('transacoes',${t.id})" aria-label="Excluir venda"><i class="fa-regular fa-trash-can"></i></button></div></td></tr>`).join(""):`<tr><td colspan="8">${empty("fa-receipt","Nenhuma venda encontrada")}</td></tr>`;
+}
+function renderExpenses(){
+  const q=document.getElementById("expensesSearch").value.toLowerCase(),status=document.getElementById("expensesStatusFilter").value,type=document.getElementById("expensesTypeFilter").value;
+  const list=expenses().filter(t=>(!q||[t.desc,t.produto,t.fornecedor,t.responsavel].some(x=>(x||"").toLowerCase().includes(q)))&&(!status||(status==="pago")===!!t.pago)&&(!type||t.tipo===type)).sort((a,b)=>b.data.localeCompare(a.data));
+  const total=list.reduce((a,t)=>a+Number(t.valor),0),pending=list.filter(t=>!t.pago).reduce((a,t)=>a+Number(t.valor),0);
+  document.getElementById("expensesMiniStats").innerHTML=`<div class="mini-stat"><span>Total filtrado</span><strong>${money(total)}</strong></div><div class="mini-stat"><span>Registros</span><strong>${list.length}</strong></div><div class="mini-stat"><span>Pendente</span><strong>${money(pending)}</strong></div>`;
+  document.getElementById("expensesTable").innerHTML=list.length?list.map(t=>`<tr><td>${shortDate(t.data)}</td><td><div class="client-cell"><div class="table-avatar">${initials(t.fornecedor||t.responsavel||"D")}</div><strong>${escapeHtml(t.fornecedor||"Sem fornecedor")}</strong></div></td><td>${escapeHtml(t.desc||t.produto||"Despesa")}</td><td>${t.tipo==="invest"?"Investimento":"Compra"}</td><td>${escapeHtml(t.responsavel||"—")}</td><td><button class="status ${t.pago?"paid":"pending"} table-action" onclick="togglePayment(${t.id})">${t.pago?"Pago":"Pendente"}</button></td><td><strong>${money(t.valor)}</strong></td><td><div class="table-actions"><button class="table-action" onclick="editExpense(${t.id})" aria-label="Editar despesa"><i class="fa-regular fa-pen-to-square"></i></button><button class="table-action" onclick="removeItem('transacoes',${t.id})" aria-label="Excluir despesa"><i class="fa-regular fa-trash-can"></i></button></div></td></tr>`).join(""):`<tr><td colspan="8">${empty("fa-wallet","Nenhuma despesa encontrada")}</td></tr>`;
 }
 function renderPipeline(){
   document.getElementById("pipeline").innerHTML=stageConfig.map(stage=>{const items=db.oportunidades.filter(o=>o.etapa===stage.id),sum=items.reduce((a,o)=>a+Number(o.valor),0);return `<div class="pipeline-column" data-stage="${stage.id}"><div class="pipeline-head"><h3><i class="fa-solid fa-circle" style="color:${stage.color};font-size:7px"></i> ${stage.label}</h3><span>${items.length} · ${money(sum)}</span></div>${items.map(o=>`<div class="opportunity" draggable="true" data-id="${o.id}"><h4>${escapeHtml(o.titulo)}</h4><p>${escapeHtml(clientName(o.clienteId))}</p><div class="opportunity-foot"><strong>${money(o.valor)}</strong><span>${shortDate(o.previsao)}</span></div></div>`).join("")}</div>`}).join("");
@@ -164,11 +172,11 @@ function empty(icon,text){return `<div class="empty"><i class="fa-solid ${icon}"
 
 function openDrawer(type,data={}){
   drawerType=type;const config={
-    sale:["NOVA VENDA","Registrar venda",saleFields(data)],
+    sale:[data.id?"EDITAR VENDA":"NOVA VENDA",data.id?"Atualizar venda":"Registrar venda",saleFields(data)],
     client:[data.id?"EDITAR CLIENTE":"NOVO CLIENTE",data.id?"Atualizar cadastro":"Cadastrar cliente",clientFields(data)],
     opportunity:["NOVA OPORTUNIDADE","Criar oportunidade",opportunityFields(data)],
     task:["NOVA TAREFA","Agendar acompanhamento",taskFields(data)],
-    expense:["NOVA DESPESA","Registrar despesa",expenseFields(data)],
+    expense:[data.id?"EDITAR DESPESA":"NOVA DESPESA",data.id?"Atualizar despesa":"Registrar despesa",expenseFields(data)],
     flock:["NOVO LOTE","Cadastrar lote",flockFields(data)]
   }[type];
   document.getElementById("drawerKicker").textContent=config[0];document.getElementById("drawerTitle").textContent=config[1];document.getElementById("formFields").innerHTML=config[2];
@@ -177,22 +185,32 @@ function openDrawer(type,data={}){
 function closeDrawer(){document.getElementById("drawer").classList.remove("open");document.getElementById("drawerBackdrop").classList.remove("open");document.getElementById("drawerForm").reset()}
 const clientOptions=(selected="")=>`<option value="">Cliente avulso</option>${db.clientes.map(c=>`<option value="${c.id}" ${String(c.id)===String(selected)?"selected":""}>${escapeHtml(c.nome)}</option>`).join("")}`;
 const field=(label,name,type="text",value="",extra="",full="")=>`<div class="field ${full}"><label>${label}</label><input type="${type}" name="${name}" value="${escapeHtml(value)}" ${extra}></div>`;
-function saleFields(d){return `<div class="form-grid">${field("Data","data","date",d.data||isoToday(),"required")}<div class="field"><label>Cliente</label><select name="clienteId">${clientOptions(d.clienteId)}</select></div>${field("Produto","produto","text",d.produto||"Ovos caipiras","required")}${field("Quantidade de ovos","qtd","number",d.qtd||"","min='0' required")}${field("Valor total","valor","number",d.valor||"","min='0' step='0.01' required")}${field("Responsável pela venda","responsavel","text",d.responsavel||"")}<div class="field"><label>Forma de pagamento</label><select name="formaPagamento"><option>Pix</option><option>Dinheiro</option><option>Cartão</option><option>Prazo</option></select></div><div class="field full"><label class="checkbox-field"><input type="checkbox" name="pago" checked> Pagamento já recebido</label><label class="checkbox-field"><input type="checkbox" name="cortesia"> Registrar como cortesia</label></div></div>`}
+function paymentOptions(selected=""){return ["Pix","Dinheiro","Cartão","Prazo"].map(x=>`<option ${String(selected)===x?"selected":""}>${x}</option>`).join("")}
+function expenseTypeOptions(selected="compra"){return [["compra","Compra"],["invest","Investimento"]].map(([value,label])=>`<option value="${value}" ${selected===value?"selected":""}>${label}</option>`).join("")}
+function saleFields(d){return `<input type="hidden" name="id" value="${d.id||""}"><div class="form-grid">${field("Data","data","date",d.data||isoToday(),"required")}<div class="field"><label>Cliente</label><select name="clienteId">${clientOptions(d.clienteId)}</select></div>${field("Produto","produto","text",d.produto||d.desc||"Ovos caipiras","required")}${field("Quantidade de ovos","qtd","number",d.qtd||"","min='0' required")}${field("Valor total","valor","number",d.valor||"","min='0' step='0.01' required")}${field("Responsável pela venda","responsavel","text",d.responsavel||"")}<div class="field"><label>Forma de pagamento</label><select name="formaPagamento">${paymentOptions(d.formaPagamento)}</select></div><div class="field full"><label class="checkbox-field"><input type="checkbox" name="pago" ${d.id?!d.pago?"":"checked":"checked"}> Pagamento já recebido</label><label class="checkbox-field"><input type="checkbox" name="cortesia" ${d.cortesia?"checked":""}> Registrar como cortesia</label></div></div>`}
 function clientFields(d){return `<input type="hidden" name="id" value="${d.id||""}"><div class="form-grid">${field("Nome / razão social","nome","text",d.nome||"","required","full")}${field("Telefone / WhatsApp","contato","tel",d.contato||"")}${field("E-mail","email","email",d.email||"")}${field("Cidade","cidade","text",d.cidade||"")}<div class="field"><label>Segmento</label><select name="segmento">${["Residencial","Comércio","Restaurante","Revenda"].map(x=>`<option ${d.segmento===x?"selected":""}>${x}</option>`)}</select></div><div class="field full"><label>Observações</label><textarea name="observacoes">${escapeHtml(d.observacoes||"")}</textarea></div></div>`}
 function opportunityFields(d){return `<div class="form-grid"><div class="field full"><label>Cliente</label><select name="clienteId" required>${clientOptions(d.clienteId)}</select></div>${field("Título da oportunidade","titulo","text",d.titulo||"","required","full")}${field("Valor estimado","valor","number",d.valor||"","min='0' step='0.01' required")}${field("Previsão de fechamento","previsao","date",d.previsao||isoToday())}<div class="field full"><label>Etapa</label><select name="etapa">${stageConfig.map(s=>`<option value="${s.id}">${s.label}</option>`)}</select></div></div>`}
 function taskFields(d){return `<div class="form-grid">${field("Tarefa","titulo","text",d.titulo||"","required","full")}<div class="field full"><label>Cliente</label><select name="clienteId">${clientOptions(d.clienteId)}</select></div>${field("Data","data","date",d.data||isoToday(),"required")}${field("Horário","hora","time",d.hora||"09:00")}<div class="field full"><label>Tipo de contato</label><select name="tipo"><option>Ligação</option><option>WhatsApp</option><option>Visita</option><option>E-mail</option><option>Entrega</option></select></div></div>`}
-function expenseFields(d){return `<div class="form-grid">${field("Data","data","date",d.data||isoToday(),"required")}${field("Valor","valor","number",d.valor||"","min='0' step='0.01' required")}${field("Descrição","desc","text",d.desc||"","required","full")}${field("Fornecedor","fornecedor","text",d.fornecedor||"")}${field("Responsável","responsavel","text",d.responsavel||"")}<div class="field full"><label class="checkbox-field"><input type="checkbox" name="pago" checked> Despesa já paga</label></div></div>`}
+function expenseFields(d){return `<input type="hidden" name="id" value="${d.id||""}"><div class="form-grid">${field("Data","data","date",d.data||isoToday(),"required")}${field("Valor","valor","number",d.valor||"","min='0' step='0.01' required")}${field("Descrição","desc","text",d.desc||d.produto||"","required","full")}<div class="field"><label>Tipo</label><select name="tipo">${expenseTypeOptions(d.tipo||"compra")}</select></div>${field("Fornecedor","fornecedor","text",d.fornecedor||"")}${field("Responsável","responsavel","text",d.responsavel||"")}<div class="field full"><label class="checkbox-field"><input type="checkbox" name="pago" ${d.id?!d.pago?"":"checked":"checked"}> Despesa já paga</label></div></div>`}
 function flockFields(d){return `<div class="form-grid">${field("Nome do lote","nome","text",d.nome||"","required","full")}${field("Quantidade de aves","qtd","number",d.qtd||"","min='1' required")}${field("Data de entrada / nascimento","data","date",d.data||isoToday(),"required")}</div>`}
 function submitDrawer(e){
   e.preventDefault();const f=Object.fromEntries(new FormData(e.target));const id=Date.now();
-  if(drawerType==="sale")db.transacoes.push({id,tipo:"venda",data:f.data,clienteId:f.clienteId,qtd:Number(f.qtd),valor:Number(f.valor),produto:f.produto,desc:f.produto,responsavel:f.responsavel||"-",formaPagamento:f.formaPagamento,pago:!!e.target.pago.checked,cortesia:!!e.target.cortesia.checked,comissao:false});
+  if(drawerType==="sale"){
+    const item={id:f.id?Number(f.id):id,tipo:"venda",data:f.data,clienteId:f.clienteId,qtd:Number(f.qtd),valor:Number(f.valor),produto:f.produto,desc:f.produto,responsavel:f.responsavel||"-",fornecedor:"",formaPagamento:f.formaPagamento,pago:!!e.target.pago.checked,cortesia:!!e.target.cortesia.checked,comissao:false};
+    const existing=db.transacoes.find(t=>t.id==f.id);if(existing)Object.assign(existing,item);else db.transacoes.push(item);
+  }
   if(drawerType==="client"){const item={...f,id:f.id?Number(f.id):id};delete item.id;const existing=db.clientes.find(c=>c.id==f.id);if(existing)Object.assign(existing,item);else db.clientes.push({id,...item})}
   if(drawerType==="opportunity")db.oportunidades.push({id,...f,valor:Number(f.valor)});
   if(drawerType==="task")db.tarefas.push({id,...f,concluida:false});
-  if(drawerType==="expense")db.transacoes.push({id,tipo:"compra",data:f.data,clienteId:"",qtd:0,valor:Number(f.valor),desc:f.desc,produto:f.desc,responsavel:f.responsavel||f.fornecedor||"-",pago:!!e.target.pago.checked,cortesia:false,comissao:false});
+  if(drawerType==="expense"){
+    const item={id:f.id?Number(f.id):id,tipo:f.tipo||"compra",data:f.data,clienteId:"",qtd:0,valor:Number(f.valor),desc:f.desc,produto:f.desc,fornecedor:f.fornecedor||"",responsavel:f.responsavel||f.fornecedor||"-",formaPagamento:"",pago:!!e.target.pago.checked,cortesia:false,comissao:false};
+    const existing=db.transacoes.find(t=>t.id==f.id);if(existing)Object.assign(existing,item);else db.transacoes.push(item);
+  }
   if(drawerType==="flock")db.lotes.push({id,nome:f.nome,qtd:Number(f.qtd),data:f.data});
   closeDrawer();save("Registro salvo com sucesso");
 }
+function editSale(id){openDrawer("sale",db.transacoes.find(t=>t.id==id))}
+function editExpense(id){openDrawer("expense",db.transacoes.find(t=>t.id==id))}
 function editClient(id){openDrawer("client",db.clientes.find(c=>c.id==id))}
 function togglePayment(id){const t=db.transacoes.find(x=>x.id==id);t.pago=!t.pago;save("Pagamento atualizado")}
 function toggleTask(id){const t=db.tarefas.find(x=>x.id==id);t.concluida=!t.concluida;save("Tarefa atualizada")}

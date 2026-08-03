@@ -21,6 +21,7 @@
     <nav id="mainNav">
       <button class="nav-link active" data-view="dashboard"><i class="fa-solid fa-grid-2"></i><span>Visão geral</span></button>
       <button class="nav-link" data-view="vendas"><i class="fa-solid fa-receipt"></i><span>Vendas</span></button>
+      <button class="nav-link" data-view="despesas"><i class="fa-solid fa-money-bill-wave"></i><span>Despesas</span></button>
       <button class="nav-link" data-view="crm"><i class="fa-solid fa-filter-circle-dollar"></i><span>Funil CRM</span><b id="navOpportunities">0</b></button>
       <button class="nav-link" data-view="clientes"><i class="fa-solid fa-address-book"></i><span>Clientes</span></button>
       <button class="nav-link" data-view="agenda"><i class="fa-regular fa-calendar-check"></i><span>Agenda</span><b id="navTasks">0</b></button>
@@ -80,6 +81,15 @@
         </div>
         <div class="mini-stats" id="salesMiniStats"></div>
         <article class="card table-card"><div class="table-scroll"><table><thead><tr><th>Data</th><th>Cliente</th><th>Produto / descrição</th><th>Quantidade</th><th>Responsável</th><th>Pagamento</th><th>Valor</th><th></th></tr></thead><tbody id="salesTable"></tbody></table></div></article>
+      </section>
+
+      <section class="view" id="view-despesas">
+        <div class="section-toolbar">
+          <div class="filters"><label><i class="fa-solid fa-magnifying-glass"></i><input id="expensesSearch" placeholder="Buscar nas despesas"></label><select id="expensesStatusFilter"><option value="">Todos os pagamentos</option><option value="pago">Pago</option><option value="pendente">Pendente</option></select><select id="expensesTypeFilter"><option value="">Todos os tipos</option><option value="compra">Compra</option><option value="invest">Investimento</option></select></div>
+          <button class="primary-button" data-action="expense"><i class="fa-solid fa-plus"></i> Nova despesa</button>
+        </div>
+        <div class="mini-stats" id="expensesMiniStats"></div>
+        <article class="card table-card"><div class="table-scroll"><table><thead><tr><th>Data</th><th>Fornecedor</th><th>Descrição</th><th>Tipo</th><th>Responsável</th><th>Pagamento</th><th>Valor</th><th></th></tr></thead><tbody id="expensesTable"></tbody></table></div></article>
       </section>
 
       <section class="view" id="view-crm">
