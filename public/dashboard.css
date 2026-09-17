@@ -8,19 +8,10 @@
 .topbar{display:none!important}
 body{background:#f3f6f4}
 .content{padding:42px clamp(20px,4vw,52px) 64px}
-.view-intro{margin:0 0 24px;padding:2px 2px 0}
-.view-intro .eyebrow{display:block;margin-bottom:7px}
-.view-intro h2{font:800 30px Manrope;margin:0;letter-spacing:-.6px}
-.view-intro p{font-size:13px;color:var(--muted);margin:7px 0 0}
-.view-intro+.section-toolbar{margin-top:0}
 .section-toolbar{margin-bottom:20px}
 .mobile-menu{display:none!important;position:fixed;left:14px;top:14px;z-index:25;box-shadow:0 8px 22px rgba(10,40,30,.14)}
 
 @media(max-width:760px){
   .mobile-menu{display:inline-flex!important}
   .content{padding:76px 14px 40px}
-  .view-intro{padding:0 4px;margin-bottom:18px}
-  .view-intro .eyebrow{display:block!important}
-  .view-intro h2{font-size:25px}
-  .view-intro p{font-size:12px;line-height:1.45}
 }

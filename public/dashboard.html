@@ -64,7 +64,6 @@
       </section>
 
       <section class="view" id="view-vendas">
-        <div class="view-intro"><span class="eyebrow">COMERCIAL</span><h2>Vendas</h2><p>Acompanhe pedidos, recebimentos e histórico comercial.</p></div>
         <div class="section-toolbar">
           <div class="filters"><label><i class="fa-solid fa-magnifying-glass"></i><input id="salesSearch" placeholder="Buscar nas vendas"></label><select id="salesStatusFilter"><option value="">Todos os pagamentos</option><option value="pago">Pago</option><option value="pendente">Pendente</option></select><select id="salesTypeFilter"><option value="">Todos os tipos</option><option value="venda">Venda</option><option value="cortesia">Cortesia</option></select></div>
           <button class="primary-button" data-action="sale"><i class="fa-solid fa-plus"></i> Nova venda</button>
@@ -74,7 +73,6 @@
       </section>
 
       <section class="view" id="view-despesas">
-        <div class="view-intro"><span class="eyebrow">FINANCEIRO</span><h2>Despesas</h2><p>Organize custos, compras e investimentos da operação.</p></div>
         <div class="section-toolbar">
           <div class="filters"><label><i class="fa-solid fa-magnifying-glass"></i><input id="expensesSearch" placeholder="Buscar nas despesas"></label><select id="expensesStatusFilter"><option value="">Todos os pagamentos</option><option value="pago">Pago</option><option value="pendente">Pendente</option></select><select id="expensesTypeFilter"><option value="">Todos os tipos</option><option value="compra">Compra</option><option value="invest">Investimento</option></select></div>
           <button class="primary-button" data-action="expense"><i class="fa-solid fa-plus"></i> Nova despesa</button>
@@ -84,13 +82,11 @@
       </section>
 
       <section class="view" id="view-crm">
-        <div class="view-intro"><span class="eyebrow">RELACIONAMENTO</span><h2>Funil CRM</h2><p>Visualize e avance suas oportunidades comerciais.</p></div>
         <div class="section-toolbar"><div><p class="section-copy">Arraste oportunidades entre as etapas para atualizar o relacionamento.</p></div><button class="primary-button" data-action="opportunity"><i class="fa-solid fa-plus"></i> Nova oportunidade</button></div>
         <div class="pipeline" id="pipeline"></div>
       </section>
 
       <section class="view" id="view-clientes">
-        <div class="view-intro"><span class="eyebrow">RELACIONAMENTO</span><h2>Clientes</h2><p>Tenha todos os contatos e histórico de compras em um só lugar.</p></div>
         <div class="section-toolbar">
           <div class="filters"><label><i class="fa-solid fa-magnifying-glass"></i><input id="clientSearch" placeholder="Nome, telefone ou cidade"></label><select id="clientSegmentFilter"><option value="">Todos os segmentos</option><option>Residencial</option><option>Comércio</option><option>Restaurante</option><option>Revenda</option></select></div>
           <button class="primary-button" data-action="client"><i class="fa-solid fa-user-plus"></i> Novo cliente</button>
@@ -99,20 +95,17 @@
       </section>
 
       <section class="view" id="view-agenda">
-        <div class="view-intro"><span class="eyebrow">PRODUTIVIDADE</span><h2>Agenda comercial</h2><p>Planeje os próximos contatos e mantenha o relacionamento em dia.</p></div>
         <div class="section-toolbar"><div class="filters"><select id="taskStatusFilter"><option value="abertas">Tarefas abertas</option><option value="todas">Todas as tarefas</option><option value="concluidas">Concluídas</option></select></div><button class="primary-button" data-action="task"><i class="fa-solid fa-plus"></i> Nova tarefa</button></div>
         <div class="agenda-layout"><div id="agendaDays"></div><article class="card"><div class="card-head"><h3>Resumo da agenda</h3></div><div id="agendaSummary"></div></article></div>
       </section>
 
       <section class="view" id="view-financeiro">
-        <div class="view-intro"><span class="eyebrow">GEST&Atilde;O</span><h2>Financeiro</h2><p>Acompanhe recebimentos, pendências e despesas em tempo real.</p></div>
         <div class="section-toolbar"><p class="section-copy">Acompanhe recebimentos, pendências e despesas.</p><button class="primary-button" data-action="expense"><i class="fa-solid fa-plus"></i> Nova despesa</button></div>
         <div class="kpi-grid" id="financeKpis"></div>
         <div class="dashboard-grid finance-grid"><article class="card chart-card"><div class="card-head"><div><span class="card-kicker">FLUXO DE CAIXA</span><h3>Entradas e saídas</h3></div></div><div class="chart-wrap"><canvas id="financeChart"></canvas></div></article><article class="card"><div class="card-head"><h3>Despesas recentes</h3></div><div id="expenseList"></div></article></div>
       </section>
 
       <section class="view" id="view-plantel">
-        <div class="view-intro"><span class="eyebrow">PRODU&Ccedil;&Atilde;O</span><h2>Plantel</h2><p>Monitore os lotes ativos e a evolução do plantel.</p></div>
         <div class="section-toolbar"><p class="section-copy">Lotes ativos e idade estimada das aves.</p><button class="primary-button" data-action="flock"><i class="fa-solid fa-plus"></i> Novo lote</button></div>
         <div class="flock-summary" id="flockSummary"></div><div class="client-grid" id="flockGrid"></div>
       </section>
