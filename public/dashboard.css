@@ -15,3 +15,12 @@ body{background:#f3f6f4}
   .mobile-menu{display:inline-flex!important}
   .content{padding:76px 14px 40px}
 }
+
+/* Mantém o arraste horizontal sem exibir a barra nativa. */
+.pipeline{scrollbar-width:none;-ms-overflow-style:none;min-height:calc(100vh - 200px)}
+.pipeline::-webkit-scrollbar{width:0;height:0;display:none}
+.pipeline-column{min-height:calc(100vh - 200px)}
+@media(max-width:760px){
+  .pipeline{min-height:calc(100vh - 180px)}
+  .pipeline-column{min-height:calc(100vh - 180px)}
+}
