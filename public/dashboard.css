@@ -3,3 +3,24 @@
 @media(max-width:1100px){.kpi-grid{grid-template-columns:repeat(2,1fr)}.client-grid{grid-template-columns:repeat(2,1fr)}.dashboard-grid{grid-template-columns:1fr}.agenda-layout{grid-template-columns:1fr}.finance-grid{grid-template-columns:1fr}}
 @media(max-width:760px){.sidebar{transform:translateX(-100%);transition:.3s}.sidebar.open{transform:none}.app{margin-left:0}.mobile-menu{display:inline-flex}.topbar{height:78px;padding:0 16px}.topbar h1{font-size:20px}.eyebrow{display:none}.global-search{display:none}.content{padding:18px 14px 40px}.hero{padding:24px;display:block}.period-filter{margin-top:20px;width:max-content}.kpi-grid{grid-template-columns:1fr 1fr;gap:9px}.kpi{padding:14px;gap:10px}.kpi-icon{width:35px;height:35px}.kpi strong{font-size:16px}.client-grid{grid-template-columns:1fr}.section-toolbar{align-items:flex-start;gap:12px;flex-direction:column}.filters{width:100%;overflow-x:auto}.filters label{min-width:210px}.mini-stats{grid-template-columns:1fr}.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.drawer{padding:23px 20px}.chart-card{padding:16px}.legend{display:none}}
 .table-actions{display:flex;align-items:center;gap:6px}.table-action:hover{color:var(--green-600)}
+
+/* O conteúdo agora respira sem a barra global: a navegação lateral é o ponto fixo do produto. */
+.topbar{display:none!important}
+body{background:#f3f6f4}
+.content{padding:42px clamp(20px,4vw,52px) 64px}
+.view-intro{margin:0 0 24px;padding:2px 2px 0}
+.view-intro .eyebrow{display:block;margin-bottom:7px}
+.view-intro h2{font:800 30px Manrope;margin:0;letter-spacing:-.6px}
+.view-intro p{font-size:13px;color:var(--muted);margin:7px 0 0}
+.view-intro+.section-toolbar{margin-top:0}
+.section-toolbar{margin-bottom:20px}
+.mobile-menu{display:none!important;position:fixed;left:14px;top:14px;z-index:25;box-shadow:0 8px 22px rgba(10,40,30,.14)}
+
+@media(max-width:760px){
+  .mobile-menu{display:inline-flex!important}
+  .content{padding:76px 14px 40px}
+  .view-intro{padding:0 4px;margin-bottom:18px}
+  .view-intro .eyebrow{display:block!important}
+  .view-intro h2{font-size:25px}
+  .view-intro p{font-size:12px;line-height:1.45}
+}

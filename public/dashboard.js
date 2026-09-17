@@ -66,9 +66,7 @@ document.addEventListener("DOMContentLoaded",async()=>{
   document.getElementById("closeDrawer").onclick=closeDrawer;document.getElementById("cancelDrawer").onclick=closeDrawer;document.getElementById("drawerBackdrop").onclick=closeDrawer;
   document.getElementById("drawerForm").onsubmit=submitDrawer;
   document.getElementById("menuButton").onclick=()=>document.getElementById("sidebar").classList.toggle("open");
-  document.getElementById("quickAdd").onclick=()=>openDrawer("sale");
-  document.getElementById("globalSearch").addEventListener("input",e=>{if(e.target.value){navigate("clientes");document.getElementById("clientSearch").value=e.target.value;renderClients()}});
-  document.addEventListener("keydown",e=>{if(e.key==="Escape")closeDrawer();if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="k"){e.preventDefault();document.getElementById("globalSearch").focus()}});
+  document.addEventListener("keydown",e=>{if(e.key==="Escape")closeDrawer()});
   setInterval(()=>document.getElementById("clock").textContent=new Date().toLocaleString("pt-BR",{dateStyle:"short",timeStyle:"short"}),1000);
   await loadData();
   renderAll();
@@ -97,14 +95,12 @@ async function loadData(){
 function navigate(view){
   document.querySelectorAll(".view").forEach(v=>v.classList.toggle("active",v.id==="view-"+view));
   document.querySelectorAll(".nav-link[data-view]").forEach(b=>b.classList.toggle("active",b.dataset.view===view));
-  document.getElementById("pageEyebrow").textContent=titles[view][0];document.getElementById("pageTitle").textContent=titles[view][1];
   document.getElementById("sidebar").classList.remove("open");
   ({dashboard:renderDashboard,vendas:renderSales,despesas:renderExpenses,crm:renderPipeline,clientes:renderClients,agenda:renderAgenda,financeiro:renderFinance,plantel:renderFlock}[view])();
 }
 function renderAll(){
   const openTasks=db.tarefas.filter(t=>!t.concluida).length;
   document.getElementById("navTasks").textContent=openTasks;document.getElementById("navTasks").style.display=openTasks?"":"none";
-  document.getElementById("notificationDot").style.display=openTasks?"":"none";
   document.getElementById("navOpportunities").textContent=db.oportunidades.filter(o=>o.etapa!=="ganho").length;
   renderDashboard();renderSales();renderExpenses();renderPipeline();renderClients();renderAgenda();renderFinance();renderFlock();
 }
